@@ -9,12 +9,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static java.lang.String.format;
+
 public class Exchanger {
 
     private static final String USER_AGENT = "MOZILLA/5.0";
 
-    public static String getExchangeMultiple(String from, String to) throws IOException, JSONException {
-        String API_ENDPOINT = "https://free.currconv.com/api/v7/convert?q=" + from + "_" + to + "&compact=ultra&apiKey=9f4a133883a20e901e8d";
+
+
+    public static String getExchangeMultiple(String URL, String from, String to) throws IOException, JSONException {
+        String API_ENDPOINT = format(URL, from, to);
         HttpURLConnection connection = getHttpURLConnection(API_ENDPOINT);
         if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
             JSONObject jsonObject = getResponse(connection);

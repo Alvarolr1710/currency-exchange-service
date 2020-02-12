@@ -1,5 +1,6 @@
 package microservicescourse.currencyexchangeserver.controller;
 
+import microservicescourse.currencyexchangeserver.config.CurrencyExchangeServerConfig;
 import microservicescourse.currencyexchangeserver.exchangevalue.ExchangeValue;
 import microservicescourse.currencyexchangeserver.exchangevalue.ExchangeValueEntity;
 import microservicescourse.currencyexchangeserver.exchangevalue.Exchanger;
@@ -25,6 +26,9 @@ public class CurrencyExchangeController {
     @Autowired
     private ExchangeValueEntityRepository exchangeValueEntityRepository;
 
+    @Autowired
+    private CurrencyExchangeServerConfig currencyExchangeServerConfig;
+
     @GetMapping("currency-exchange-API/from/{from}/to/{to}")
     public ExchangeValue retrieveExchangeValueUsingAPI(@PathVariable String from, @PathVariable String to) throws IOException, JSONException {
         return getExchangeValue(from, to);
@@ -37,13 +41,14 @@ public class CurrencyExchangeController {
     }
 
     private ExchangeValueEntity getExchangeValueEntity(@PathVariable String from, @PathVariable String to) {
-        ExchangeValueEntity exchangeValue = exchangeValueEntityRepository.findByFromAndTo(from,to);
+        ExchangeValueEntity exchangeValue = exchangeValueEntityRepository.findByFromAndTo(from, to);
         exchangeValue.setPort(parseInt(requireNonNull(environment.getProperty("local.server.port"))));
         return exchangeValue;
     }
 
     private ExchangeValue getExchangeValue(@PathVariable String from, @PathVariable String to) throws IOException, JSONException {
-        ExchangeValue exchangeValue = new ExchangeValue(1710L, from, to, Exchanger.getExchangeMultiple(from, to));
+        ExchangeValue exchangeValue = new ExchangeValue(1710L, from, to,
+                Exchanger.getExchangeMultiple(currencyExchangeServerConfig.getAPI_URL(), from, to));
         exchangeValue.setPort(parseInt(requireNonNull(environment.getProperty("local.server.port"))));
         return exchangeValue;
     }
